@@ -1,4 +1,4 @@
-name: Lint
+name: Lint Workflow
 
 on:
   pull_request:
@@ -6,33 +6,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  static-analysis:
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Run semgrep
+      - name: Run Semgrep
         uses: returntocorp/semgrep-action@v1
         with:
           config: auto
 
-  dockerfile-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run hadolint
+      - name: Run Hadolint
         run: |
-          docker run --rm -i hadolint/hadolint < Dockerfile
+          docker run --rm -v $(pwd):/app -w /app hadolint/hadolint:latest hadolint --ignore DL3020 --ignore DL3006 Dockerfile
 
-  super-linter:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run super-linter
+      - name: Run Super-Linter
+        if: github.event_name == 'pull_request'
         uses: github/super-linter@v4

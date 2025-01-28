@@ -1,49 +1,36 @@
-name: Release
+name: Release Workflow
 
 on:
   push:
     tags:
-      - '*' # 
+      - "*"
 
 jobs:
   release:
+    name: Release and Publish
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.19'
-
-      - name: Install dependencies
-        run: go mod tidy
-
-      - name: Build the project
-        run: go build -o main ./main.go
-
-      - name: Clean up
-        run: git clean -fd
-
-      - name: Reset git state
-        run: git reset --hard
+          go-version: "1.19" 
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
-          version: latest
-          args: release
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
 
-      - name: Build Docker image
+      - name: Build Docker Image
         run: |
-          docker buildx build . -f Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${{ github.ref_name }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME} .
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${{ github.ref_name }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME}
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }} # Redondant, mais pour plus de clarté
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}     # Redondant, mais pour plus de clarté

@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod" #vérifie les dépendances Go dans le fichier go.mod
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker" #vérifie les dépendances liées aux images docker
+    directory: "/"
+    schedule:
+      interval: "daily" #dependabot va s'executer chaque jour
