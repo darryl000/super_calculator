@@ -26,11 +26,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker Image
+      - name : Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME} .
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME}
+            docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME} .
+            echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME}}" --password-stdin
+            docker push ${{ secrets.DOCKER_HUB_USERNAME }}/super_calculator:${GITHUB_REF_NAME}
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }} # Redondant, mais pour plus de clarté
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}     # Redondant, mais pour plus de clarté
+            DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+            DOCKERHUB_TOKEN:  ${{ secrets.DOCKER_HUB_PASSWORD }}
